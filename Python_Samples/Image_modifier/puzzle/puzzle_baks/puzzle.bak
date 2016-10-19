@@ -1,0 +1,61 @@
+import time
+from sys import *
+from groups import *
+
+def check_initial_conditions(argv):
+	if len(argv) < 2:
+		print "Usage: python puzzle.py <input file>"
+		exit()
+
+def in_file(argv):
+	try:
+		f = open(argv[1], 'r')
+		return f
+	except:
+		print 'Could not open "' + argv + '" for reading.'
+		exit()
+
+def process_image(infile):
+	# function breaks if there is a double space
+	outfile = open('hidden.ppm', 'w')
+
+	# writes header, width x height, color cap value to file
+	for i in range(3):
+		outfile.write(infile.readline())
+
+	pixelList = []
+
+	# skips random line breaks, though breaks on extra white space, thus
+	# it will print an error and continue, though output file will be
+	# slightly off
+	# starts after the defining ppm values (header, width x height, cap)
+	index = 3
+	for aLine in infile:
+		try:
+			line = aLine.strip('\n').split(' ')
+			for value in line:
+				pixelList.append((int(value)))
+			index += 1
+		except:
+			print 'Line' + str(index), 
+			print 'is not formatted correctly ... skipping'
+			index += 1
+	pixelList = groups_of_3(pixelList)
+	for aPixel in pixelList:
+		newRed = min(int(aPixel[0]) + 
+			     int(aPixel[0]) * 10, 255)
+		for i in range(len(aPixel)):
+			aPixel[i] = newRed
+		outfile.write(str(aPixel[0]) + ' ' + 
+		 	      str(aPixel[1]) + ' ' +
+		      	      str(aPixel[2]) + '\n')
+	infile.close()
+	outfile.close()
+
+def main(argv):
+	check_initial_conditions(argv)
+	infile = in_file(argv)
+	process_image(infile)
+
+if __name__ == '__main__':
+	main(argv)
