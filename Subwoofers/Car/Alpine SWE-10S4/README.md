@@ -1,0 +1,1 @@
+Maximum excursion is 10mm for this driver.
